@@ -12,7 +12,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 110vh;
             background-color: white;
             flex-direction: column;
             color: black;
@@ -29,7 +29,7 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.3s;
             position: absolute;
-            bottom: 35%;
+            bottom: 25%;
             text-align: center;
             box-shadow: 0 0 40px rgba(255, 165, 0, 1);
         }
@@ -40,12 +40,9 @@
         .lootbox:hover {
             transform: scale(1.02);
         }
-        .lootbox:active {
-            transform: scale(1.05);
-        }
         .reward-container {
             position: absolute;
-            bottom: 50%;
+            bottom: 40%;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 100px;
@@ -55,11 +52,11 @@
             width: 140px;
             height: 200px;
             display: none;
-            transition: transform 0.3s ease-out;
+            transition: transform 0.5s ease-out;
             perspective: 1000px;
             transform-style: preserve-3d;
             border-radius: 25px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
             position: relative;
         }
         .reward.clicked {
@@ -121,11 +118,15 @@
 
         function handleFlip(e, reward) {
             let rect = reward.getBoundingClientRect();
-            let x = (e.clientX - rect.left - rect.width / 2) / 5;
-            let y = (e.clientY - rect.top - rect.height / 2) / 5;
-            reward.style.transform = `rotateX(${-y * 8}deg) rotateY(${x * 8}deg)`;
+            let x = (e.clientX - rect.left - rect.width / 2) / 4;
+            let y = (e.clientY - rect.top - rect.height / 2) / 4;
+            
+            // Allow slightly more tilt but prevent full inversion
+            let rotateX = Math.max(-15, Math.min(-y * 10, 15));
+            let rotateY = Math.max(-15, Math.min(x * 10, 15));
+            
+            reward.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         }
-        
         function resetFlip(reward) {
             if (!reward.classList.contains('held')) {
                 reward.style.transform = 'rotateX(0deg) rotateY(0deg)';
