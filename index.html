@@ -27,28 +27,28 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.2s, box-shadow 0.3s;
             position: absolute;
             bottom: 35%;
             text-align: center;
-            box-shadow: 0 0 30px rgba(255, 165, 0, 1);
+            box-shadow: 0 0 40px rgba(255, 165, 0, 1);
         }
         .lootbox i {
             font-size: 50px;
             color: white;
         }
         .lootbox:hover {
-            transform: scale(1.3);
+            transform: scale(1.02);
         }
         .lootbox:active {
-            transform: scale(1.5);
+            transform: scale(1.05);
         }
         .reward-container {
             position: absolute;
             bottom: 50%;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 80px;
+            gap: 100px;
             text-align: center;
         }
         .reward {
@@ -59,14 +59,11 @@
             perspective: 1000px;
             transform-style: preserve-3d;
             border-radius: 25px;
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
             position: relative;
         }
-        .reward:active {
-            transition: none;
-        }
         .reward.clicked {
-            transform: scale(1.6);
+            transform: scale(1.2);
         }
     </style>
 </head>
@@ -77,17 +74,20 @@
     <script>
         let clicks = 0;
         let canOpen = true;
+        let lastClickTime = 0;
         let selectedCard = null;
         const lootTable = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'cyan', 'lime', 'white', 'magenta', 'teal', 'gold', 'silver', 'brown', 'black', 'navy', 'maroon', 'olive'];
 
         function openLootbox() {
-            if (!canOpen) return;
+            let currentTime = new Date().getTime();
+            if (!canOpen || (currentTime - lastClickTime < 150)) return;
+            lastClickTime = currentTime;
             
             let box = document.querySelector('.lootbox');
-            box.style.transform = 'scale(1.5)';
+            box.style.transform = 'scale(1.05)';
             setTimeout(() => {
                 box.style.transform = 'scale(1)';
-            }, 300);
+            }, 200);
             
             clicks++;
             if (clicks >= 5) {
@@ -96,7 +96,7 @@
                 setTimeout(() => {
                     revealReward();
                     canOpen = true;
-                }, 3000);
+                }, 1500);
             }
         }
 
@@ -109,7 +109,7 @@
                 reward.className = 'reward';
                 reward.style.backgroundColor = color;
                 reward.style.display = 'block';
-                reward.style.animation = `slide-in 0.6s ease-out ${index * 0.1}s forwards`;
+                reward.style.animation = `slide-in 0.3s ease-out ${index * 0.05}s forwards`;
                 rewardContainer.appendChild(reward);
                 reward.addEventListener('mousemove', (e) => handleFlip(e, reward));
                 reward.addEventListener('mouseleave', () => resetFlip(reward));
@@ -121,14 +121,14 @@
 
         function handleFlip(e, reward) {
             let rect = reward.getBoundingClientRect();
-            let x = e.clientX - rect.left - rect.width / 2;
-            let y = e.clientY - rect.top - rect.height / 2;
-            reward.style.transform = `rotateY(${-x / 5}deg) rotateX(${-y / 5}deg)`;
+            let x = (e.clientX - rect.left - rect.width / 2) / 5;
+            let y = (e.clientY - rect.top - rect.height / 2) / 5;
+            reward.style.transform = `rotateX(${-y * 8}deg) rotateY(${x * 8}deg)`;
         }
         
         function resetFlip(reward) {
             if (!reward.classList.contains('held')) {
-                reward.style.transform = 'rotateY(0deg) rotateX(0deg)';
+                reward.style.transform = 'rotateX(0deg) rotateY(0deg)';
             }
         }
 
@@ -146,7 +146,7 @@
             }
             selectedCard = card;
             card.classList.add('clicked');
-            card.style.transform = 'scale(1.6)';
+            card.style.transform = 'scale(1.2)';
         }
     </script>
 </body>
