@@ -58,6 +58,8 @@
             border-radius: 25px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
             position: relative;
+            background-size: cover;
+            background-position: center;
         }
         .reward.clicked {
             transform: scale(1.2);
@@ -73,7 +75,12 @@
         let canOpen = true;
         let lastClickTime = 0;
         let selectedCard = null;
-        const lootTable = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'cyan', 'lime', 'white', 'magenta', 'teal', 'gold', 'silver', 'brown', 'black', 'navy', 'maroon', 'olive'];
+        
+        function getUniqueRewardImages() {
+            let numbers = Array.from({ length: 15 }, (_, i) => i + 1);
+            numbers = numbers.sort(() => Math.random() - 0.5).slice(0, 6); // Shuffle and take 6 unique numbers
+            return numbers.map(num => `loottable/reward${num}.png`);
+        }
 
         function openLootbox() {
             let currentTime = new Date().getTime();
@@ -100,13 +107,13 @@
         function revealReward() {
             let rewardContainer = document.getElementById('reward-container');
             rewardContainer.innerHTML = '';
-            let shuffledLoot = lootTable.sort(() => 0.5 - Math.random()).slice(0, 6);
-            shuffledLoot.forEach((color, index) => {
+            let uniqueRewards = getUniqueRewardImages();
+            
+            uniqueRewards.forEach(image => {
                 let reward = document.createElement('div');
                 reward.className = 'reward';
-                reward.style.backgroundColor = color;
+                reward.style.backgroundImage = `url('${image}')`;
                 reward.style.display = 'block';
-                reward.style.animation = `slide-in 0.3s ease-out ${index * 0.05}s forwards`;
                 rewardContainer.appendChild(reward);
                 reward.addEventListener('mousemove', (e) => handleFlip(e, reward));
                 reward.addEventListener('mouseleave', () => resetFlip(reward));
@@ -121,12 +128,12 @@
             let x = (e.clientX - rect.left - rect.width / 2) / 4;
             let y = (e.clientY - rect.top - rect.height / 2) / 4;
             
-            // Allow slightly more tilt but prevent full inversion
             let rotateX = Math.max(-15, Math.min(-y * 10, 15));
             let rotateY = Math.max(-15, Math.min(x * 10, 15));
             
             reward.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         }
+
         function resetFlip(reward) {
             if (!reward.classList.contains('held')) {
                 reward.style.transform = 'rotateX(0deg) rotateY(0deg)';
